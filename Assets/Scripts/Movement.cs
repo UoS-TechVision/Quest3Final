@@ -7,7 +7,7 @@ public class Movement : MonoBehaviour
 {
     private bool isMoving;
     private Vector3 origPos, targetPos, playerOrigPos, playerTargerPos;
-    private float timeToMove = 0.1f;
+    private float timeToMove = 0.125f;
     private float dist = 1.6f; //Adjust this to match your grid size
     public LayerMask obstacleLayer; //Layer for obstacles
     public LayerMask logLayer; // Layer for logs
@@ -22,22 +22,22 @@ public class Movement : MonoBehaviour
             return;
         }
         // Check for key releases and trigger movement
-        if (Input.GetKeyUp(KeyCode.W)) {
+        if (Input.GetKey(KeyCode.W)) {
             if (CanMove(Vector3.forward)) {
                 StartCoroutine(MovePlayer(new Vector3(0, 0, dist)));
             }
         }
-        else if (Input.GetKeyUp(KeyCode.S)) {
+        else if (Input.GetKey(KeyCode.S)) {
             if (CanMove(Vector3.back)) {
                 StartCoroutine(MovePlayer(new Vector3(0, 0, -dist)));
             }
         }
-        else if (Input.GetKeyUp(KeyCode.A)) {
+        else if (Input.GetKey(KeyCode.A)) {
             if (CanMove(Vector3.left)) {
                 StartCoroutine(MovePlayer(new Vector3(-dist, 0, 0)));
             }
         }
-        else if (Input.GetKeyUp(KeyCode.D)) {
+        else if (Input.GetKey(KeyCode.D)) {
             if (CanMove(Vector3.right)) {
                 StartCoroutine(MovePlayer(new Vector3(dist, 0, 0)));
             }
