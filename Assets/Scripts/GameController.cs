@@ -23,6 +23,18 @@ public class GameController : MonoBehaviour
         playerZ = player.GetPlayerZPosition(); // Initial player Z position
         previousZPosition = playerZ; // Initialize previous position
         lastGeneratedZ = Mathf.FloorToInt(playerZ); // Initialize the last generated point
+        
+        // Position score text to top-right corner
+        RectTransform scoreRectTransform = scoreText.GetComponent<RectTransform>();
+        scoreRectTransform.anchorMin = new Vector2(1, 1); // Anchor to top-right
+        scoreRectTransform.anchorMax = new Vector2(1, 1);
+        scoreRectTransform.pivot = new Vector2(1, 1); // Pivot at top-right
+        scoreRectTransform.anchoredPosition = new Vector2(-20, -20); // 20 pixels inset
+        scoreRectTransform.sizeDelta = new Vector2(200, 50); // Set width and height
+        
+        // Set text alignment to right
+        scoreText.alignment = TextAlignmentOptions.TopRight;
+        
         UpdateScoreText();
     }
 
