@@ -1,0 +1,41 @@
+# --- Unity Folders ---
+Library/
+Temp/
+Obj/
+Build/
+Builds/
+Logs/
+MemoryCaptures/
+UserSettings/
+
+# --- Asset Metadata ---
+Assets/**/*.tmp
+Assets/**/*.backup
+Assets/**/*.sample
+
+# --- Build Outputs ---
+*.apk
+*.unitypackage
+*.app
+*.exe
+
+# --- IDE & OS Specific ---
+.vs/
+.vscode/
+.gradle/
+.idea/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
