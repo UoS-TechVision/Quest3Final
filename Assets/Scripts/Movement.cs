@@ -28,7 +28,7 @@ public class Movement : MonoBehaviour
             }
         }
         else if (Input.GetKey(KeyCode.S)) {
-            if (CanMove(Vector3.back)) {
+            if (transform.position.z > 0f && CanMove(Vector3.back)) {
                 StartCoroutine(MovePlayer(new Vector3(0, 0, -dist)));
             }
         }
@@ -57,6 +57,13 @@ public class Movement : MonoBehaviour
             // Adjust movement based on the log's direction
             Vector3 logMovementDirection = currentLog.transform.right; // Assume logs move along their local X-axis
             transform.position += logMovementDirection * -currentLog.speed * Time.deltaTime;
+
+            // BUG-3 fix: if the log has carried the player outside the map's X boundary, trigger death.
+            if (transform.position.x < MapMinX || transform.position.x > MapMaxX) {
+                Die("Carried off map by log");
+                return;
+            }
+
             DetectLogUnderneath();
         }
     }
@@ -85,7 +92,17 @@ public class Movement : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         model.localScale /= 1.5f; // Back to normal
     }
+    // Map bounds: 16 cells wide, each cell is 1.6f. Valid X range is [0, 15 * 1.6f].
+    private const float MapMinX = 0f;
+    private const float MapMaxX = 15 * 1.6f; // 24f
+
     private bool CanMove(Vector3 direction) {
+        // BUG-1 fix: reject moves that would take the player outside the left/right map boundary.
+        Vector3 candidate = transform.position + direction;
+        if (candidate.x < MapMinX || candidate.x > MapMaxX) {
+            return false;
+        }
+
         // Perform a raycast in the desired direction to detect obstacles
         RaycastHit hit;
         if (Physics.Raycast(transform.position, direction, out hit, dist, obstacleLayer)) {

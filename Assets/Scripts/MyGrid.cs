@@ -35,6 +35,11 @@ public class MyGrid
             for (int x = 0; x < this.GetWidth(); x++) {
                 prefab = Resources.Load<GameObject>($"Prefabs/{row[chunk[z - this.GetOffset()] - 1]}");
                 if (chunk[z - this.GetOffset()] == 2) {
+                    // Road tile centred in its first Z row. The road prefab physically spans
+                    // 3.2 Z-units (both reserved rows), so one instance covers the full lane.
+                    // BUG-9 fix: removed the second Instantiate call added by BUG-8 — that call
+                    // placed a duplicate tile centred at (z+1)*1.6+0.8, whose far edge reached
+                    // (z+2)*1.6+0.8, overlapping 0.8 units into the river tile that follows.
                     Object.Instantiate(prefab, new Vector3(x * 1.6f + 0.8f, 0, z * 1.6f + 0.8f), Quaternion.identity);
                     x++;
                 } else {
@@ -64,6 +69,9 @@ public class MyGrid
             prefab = Resources.Load<GameObject>("Prefabs/car-spawner");
             spawnRotation = spawnX == -5f ? Quaternion.Euler(0, 180f, 0) : Quaternion.identity;
             Object.Instantiate(prefab, new Vector3(spawnX, 0, z * 1.6f + 1.6f), spawnRotation);
+            // BUG-4 fix: return here so the generic spawner block below does not create a second
+            // car-spawner and DestroyObject for the same road lane.
+            return;
         } else if (chunk[z - this.GetOffset()] == 3 ) {
             prefab = Resources.Load<GameObject>("Prefabs/train-spawner");
         } else if (chunk[z - this.GetOffset()] == 4 ) {
@@ -92,13 +100,22 @@ public class MyGrid
         int[] numberArray = new int[length];
 
         while (i < length) {
+            // BUG-7 fix: when filling the very last slot, road (2) and river (4) both require
+            // i < length - 1 to place their tiles and would never advance i, causing an infinite
+            // loop. Force a single-row terrain type (grass=1 or rail=3) for the last position.
+            if (i == length - 1) {
+                numberArray[i] = (random.Next(0, 2) == 0) ? 1 : 3;
+                i++;
+                break;
+            }
+
             int digit = random.Next(1, 5);
 
             if (digit == 2) {
                 if (i < length - 1) {
                     numberArray[i] = 2;
                     numberArray[i + 1] = 2;
-                    i += 2; 
+                    i += 2;
                 }
             } else if (digit == 4) {
                 if (i < length - 1) {
